@@ -1,0 +1,94 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/menu.unity
+    guid: 9e9a74b88c37f6e47891246967bc79c9
+  - enabled: 1
+    path: Assets/Scenes/cotscene.unity
+    guid: b7ac7891f110a4348a6d051acb800a9a
+  - enabled: 1
+    path: Assets/Scenes/fase 1 city.unity
+    guid: d7ed67665ab40134fb14e9e92946ab2f
+  - enabled: 1
+    path: Assets/Scenes/fase 2 city.unity
+    guid: ff9d75b18bac0724494df4f0533df642
+  - enabled: 1
+    path: Assets/Scenes/fase 3 city.unity
+    guid: 96a4e36bca65368489edb1ea3a429667
+  - enabled: 1
+    path: Assets/Scenes/fase 4 city.unity
+    guid: 559cfca10aa9cf444977ff04658677b4
+  - enabled: 1
+    path: Assets/Scenes/fase 5 city.unity
+    guid: 835d0453d3dc3a54f8b73b6864e73392
+  - enabled: 1
+    path: Assets/Scenes/fase 6 city.unity
+    guid: b7ef343d2b40b864194795e96fe1452b
+  - enabled: 1
+    path: Assets/Scenes/fase 7 city.unity
+    guid: 600f25e8bec34e74e99ad5ea1cd27fee
+  - enabled: 1
+    path: Assets/Scenes/Desafio city.unity
+    guid: 22af9e783236c6648871c80f7cbe1c76
+  - enabled: 1
+    path: Assets/Scenes/fase 1 floresta.unity
+    guid: 2a30decfb2d18a34ab64c59b38c33fc8
+  - enabled: 1
+    path: Assets/Scenes/fase 2 floresta.unity
+    guid: 9c283be488e228f468e97ed7ce174a10
+  - enabled: 1
+    path: Assets/Scenes/fase 3 floresta.unity
+    guid: 208b636579c2d2f4fa381fb147c7ceb2
+  - enabled: 1
+    path: Assets/Scenes/fase 4 floresta.unity
+    guid: 8ff3339e7d07cab4582f4b55a3377cea
+  - enabled: 1
+    path: Assets/Scenes/fase 5 floresta.unity
+    guid: 22f3fce599c168241b26fb1fd6813143
+  - enabled: 1
+    path: Assets/Scenes/fase 6 floresta.unity
+    guid: f6205c138dc296d49bc00e012d47d980
+  - enabled: 1
+    path: Assets/Scenes/fase 7 floresta.unity
+    guid: 0c84c6f50599d1d44be9b9d4c5ffce3a
+  - enabled: 1
+    path: Assets/Scenes/Desafio floresta.unity
+    guid: 9f2d03fc5f4f4494d9a66be3ee0e4032
+  - enabled: 1
+    path: Assets/Scenes/fase dos reci.unity
+    guid: b8688dbb35b8780439882b0d4bfa3395
+  - enabled: 1
+    path: Assets/Scenes/fase recicla.unity
+    guid: 5e7a0b519f626254baaa846818668f7e
+  - enabled: 1
+    path: Assets/Scenes/fase recicla 2.unity
+    guid: be8f5fc1abd2b034cbdf0836e683cd06
+  - enabled: 1
+    path: Assets/Scenes/fase recicla 3.unity
+    guid: a81124e86f1109248b6b6520896b9e3f
+  - enabled: 1
+    path: Assets/Scenes/fase recicla 4.unity
+    guid: 99fa74075955dc34ab2486949f24c558
+  - enabled: 1
+    path: Assets/Scenes/fase recicla 5.unity
+    guid: 8f49b54da8264a646893471c4d03d80c
+  - enabled: 1
+    path: Assets/Scenes/fase recicla 6.unity
+    guid: 27671f6731201fd419c64400e56e6046
+  - enabled: 1
+    path: Assets/Scenes/fase recicla 7.unity
+    guid: dbda8f4f893aae9469aff4ea7a559886
+  - enabled: 1
+    path: Assets/Scenes/Desafio fase recicla.unity
+    guid: 804aaf2281e868448a5cd5d15cbc2271
+  - enabled: 1
+    path: Assets/Scenes/Cutscene final.unity
+    guid: 8c9cfa26abfee488c85f1582747f6a02
+  m_configObjects:
+    com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  m_UseUCBPForAssetBundles: 0
