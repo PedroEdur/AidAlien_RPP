@@ -4,7 +4,8 @@ public class PlayerMovement : MonoBehaviour
 {
     public float velocidade = 5f;
     private Rigidbody2D rb;
-    private float movimento;
+    private float movimentoHorizontal;
+    private float movimentoVertical;
 
     void Start()
     {
@@ -13,23 +14,35 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Detecta apenas as setas direita e esquerda
+        // Movimento horizontal
         if (Input.GetKey(KeyCode.RightArrow))
-            movimento = 1f;
+            movimentoHorizontal = 1f;
         else if (Input.GetKey(KeyCode.LeftArrow))
-            movimento = -1f;
+            movimentoHorizontal = -1f;
         else
-            movimento = 0f;
+            movimentoHorizontal = 0f;
+
+        // Movimento vertical
+        if (Input.GetKey(KeyCode.UpArrow))
+            movimentoVertical = 1f;
+        else if (Input.GetKey(KeyCode.DownArrow))
+            movimentoVertical = -1f;
+        else
+            movimentoVertical = 0f;
     }
 
     void FixedUpdate()
     {
-        rb.linearVelocity = new Vector2(movimento * velocidade, rb.linearVelocity.y);
+        // Move o player para os quatro lados
+        rb.linearVelocity = new Vector2(
+            movimentoHorizontal * velocidade,
+            movimentoVertical * velocidade
+        );
 
-        // vira o player de acordo com a direção
-        if (movimento > 0)
+        // Vira o player de acordo com a direção horizontal
+        if (movimentoHorizontal > 0)
             transform.localScale = new Vector3(1, 1, 1);
-        else if (movimento < 0)
+        else if (movimentoHorizontal < 0)
             transform.localScale = new Vector3(-1, 1, 1);
     }
 }
