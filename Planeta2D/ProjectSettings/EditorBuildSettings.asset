@@ -84,10 +84,10 @@ EditorBuildSettings:
     path: Assets/Scenes/fase recicla 7.unity
     guid: dbda8f4f893aae9469aff4ea7a559886
   - enabled: 1
-    path: Assets/Scenes/Desafio fase recicla.unity
+    path: Assets/Scenes/Gameplay.unity
     guid: 804aaf2281e868448a5cd5d15cbc2271
   - enabled: 1
-    path: Assets/Scenes/Cutscene final.unity
+    path: Assets/Scenes/Ganhou.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
