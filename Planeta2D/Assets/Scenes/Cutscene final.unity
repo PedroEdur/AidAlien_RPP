@@ -532,6 +532,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1749526313362301016, guid: 7bad705d27574064d914162c8c70c1d5, type: 3}
+      propertyPath: m_text
+      value: "Parab\xE9ns! Voc\xEA conseguiu derrotar o boss!!! "
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
