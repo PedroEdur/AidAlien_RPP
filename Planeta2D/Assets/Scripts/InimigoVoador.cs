@@ -1,51 +1,47 @@
+
 using UnityEngine;
 
 public class InimigoVoador : MonoBehaviour
 {
-        
-    private SpriteRenderer spriteRenderer;
-    private Rigidbody2D rigidbody2D;
-    
+    public float velocidade = 5f;
+    public float distanciaDeMovimento = 3f;
+    public float tempoParaMudarDirecao = 2f;
 
+    private Vector3 posicaoInicial;
+    private Vector3 direcao;
+    private float contador;
 
-    public float distanciaDeVisao = 10;
-    public float velocidade = 5;
-
-    
-    public Transform[] pontosDePatrulha;
-    private int pontoAtual = 0;
-    
-   void Start()
+    private void Start()
     {
-
-        
-      for(int i = 0; i <pontosDePatrulha.Length; i++)
-        {
-
-          Debug.Log(pontosDePatrulha[i].name);
-          
-          pontosDePatrulha[i].transform.SetParent(null);
-        }
-        
+        posicaoInicial = transform.position;
+        EscolherDirecao();
     }
-  void Update()
-    {
-                Debug.Log(pontoAtual);
-                
-                transform.position = Vector3.MoveTowards(transform.position, 
-                    pontosDePatrulha[pontoAtual].position, 
-                    velocidade * Time.deltaTime);
 
-                if((Mathf.Abs(pontosDePatrulha[pontoAtual].position.x - transform.position.x) <= 0.01f ||
-                   Mathf.Abs(pontosDePatrulha[pontoAtual].position.y - transform.position.y) <= 0.01f ))
-                {
-                    pontoAtual++;
-                    if (pontoAtual >= pontosDePatrulha.Length)
-                    {
-                        pontoAtual = 0;
-                    }
-                    
-                }
-      
+    private void Update()
+    {
+        contador += Time.deltaTime;
+
+        transform.position += direcao * velocidade * Time.deltaTime;
+
+        if (contador >= tempoParaMudarDirecao ||
+            Vector3.Distance(posicaoInicial, transform.position) >= distanciaDeMovimento)
+        {
+            EscolherDirecao();
+        }
+    }
+
+    private void EscolherDirecao()
+    {
+        contador = 0f;
+
+        Vector2 novaDirecao = Random.insideUnitCircle.normalized;
+
+        if (novaDirecao == Vector2.zero)
+        {
+            novaDirecao = Vector2.up;
+        }
+
+        direcao = novaDirecao;
+        posicaoInicial = transform.position;
     }
 }
