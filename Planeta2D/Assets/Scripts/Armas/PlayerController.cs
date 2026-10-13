@@ -22,14 +22,27 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        // Movimento pelas setas esquerda e direita
-        float movimento = 0f;
-        if (Input.GetKey(KeyCode.RightArrow))
-            movimento = 1f;
-        else if (Input.GetKey(KeyCode.LeftArrow))
-            movimento = -1f;
+        // Movimento horizontal
+        float movimentoHorizontal = 0f;
 
-        rb.linearVelocity = new Vector2(movimento * velocidade, rb.linearVelocity.y);
+        if (Input.GetKey(KeyCode.RightArrow))
+            movimentoHorizontal = 1f;
+        else if (Input.GetKey(KeyCode.LeftArrow))
+            movimentoHorizontal = -1f;
+
+        // Movimento vertical
+        float movimentoVertical = 0f;
+
+        if (Input.GetKey(KeyCode.UpArrow))
+            movimentoVertical = 1f;
+        else if (Input.GetKey(KeyCode.DownArrow))
+            movimentoVertical = -1f;
+
+        // Movimento para os quatro lados
+        rb.linearVelocity = new Vector2(
+            movimentoHorizontal * velocidade,
+            movimentoVertical * velocidade
+        );
 
         // Trocar entre arma e escudo (Z)
         if (Input.GetKeyDown(KeyCode.Z))
@@ -47,8 +60,12 @@ public class PlayerController : MonoBehaviour
 
     void Atirar()
     {
-        // Cria o projétil no ponto de tiro, virado pra cima
-        Instantiate(projetilPrefab, pontoDeTiro.position, Quaternion.identity);
+        // Cria o projétil no ponto de tiro
+        Instantiate(
+            projetilPrefab,
+            pontoDeTiro.position,
+            Quaternion.identity
+        );
     }
 
     void AlternarArma(bool plasmaAtivo)
@@ -61,4 +78,3 @@ public class PlayerController : MonoBehaviour
             armaVisual.SetActive(plasmaAtivo);
     }
 }
-
