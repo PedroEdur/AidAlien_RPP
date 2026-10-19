@@ -1,50 +1,55 @@
-using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
+
     public int vidas = 3;
-    private int vidasTotais;
-    
+    private int danosRecebidos = 0;
+
     public GameObject[] vidasSprite;
+
+    private void Awake()
+    {
+        instance = this;
+        danosRecebidos = 0;
+    }
 
     private void Start()
     {
-        vidasTotais = vidas;
-    }
-
-    void Awake()
-    {
-        instance = this;
-    }
-
-    private void Update()
-    {
-        if (vidasSprite.Length >0)
-        {
-
-            for (int i = vidasTotais; i > vidas; i--)
-            {
-                vidasSprite[i-1].SetActive(false);
-            }
-        }
+        AtualizarVidas();
     }
 
     public void PerderVida()
     {
-        vidas--;
+        danosRecebidos++;
 
-        if (vidas <= 0)
+        Debug.Log("Dano recebido: " + danosRecebidos);
+
+        AtualizarVidas();
+
+        if (danosRecebidos >= 4)
         {
-            ReiniciarBoss();
+            SceneManager.LoadScene("Perdeu");
+        }
+    }
+
+    private void AtualizarVidas()
+    {
+        int iconesVisiveis = Mathf.Clamp(3 - danosRecebidos, 0, 3);
+
+        for (int i = 0; i < vidasSprite.Length; i++)
+        {
+            if (vidasSprite[i] != null)
+            {
+                vidasSprite[i].SetActive(i < iconesVisiveis);
+            }
         }
     }
 
     public void ReiniciarBoss()
     {
-        // reinicia a cena atual (fase do boss)
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SceneManager.LoadScene("Perdeu");
     }
 }
