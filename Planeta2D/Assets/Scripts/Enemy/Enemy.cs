@@ -26,15 +26,22 @@ public class Enemy : MonoBehaviour
     public float duracaoInvulnerabilidade = 2f;
     public SpriteRenderer spriteChefe;
 
-    [Header("Bullet Hell")]
+    [Header("Ataques normais")]
     public float aberturaLeque = 35f;
     public int tirosCirculares = 8;
     public float intervaloComportamento = 6f;
+
+    [Header("Terceiro estágio - Cruz giratória")]
+    public float intervaloTirosCruz = 0.3f;
+    public float velocidadeRotacaoCruz = 45f;
+    public float distanciaEntreTirosCruz = 0.8f;
 
     private Animator animator;
     private float contadorTiro;
     private float contadorComportamento;
     private float contadorInvulnerabilidade;
+    private float contadorTiroCruz;
+    private float anguloCruz;
     private float destinoX;
     private float direcaoHorizontal = 1f;
     private float alturaInicial;
@@ -100,7 +107,16 @@ public class Enemy : MonoBehaviour
         }
 
         contadorComportamento += Time.deltaTime;
-        contadorTiro += Time.deltaTime;
+
+        if (faixaVidaAtual == 2)
+        {
+            anguloCruz += velocidadeRotacaoCruz * Time.deltaTime;
+            contadorTiroCruz += Time.deltaTime;
+        }
+        else
+        {
+            contadorTiro += Time.deltaTime;
+        }
 
         ExecutarMovimento();
         ExecutarTiros();
@@ -141,6 +157,7 @@ public class Enemy : MonoBehaviour
             invulneravel = true;
             contadorInvulnerabilidade = duracaoInvulnerabilidade;
             contadorTiro = 0f;
+            contadorTiroCruz = 0f;
 
             if (spriteChefe != null)
                 spriteChefe.color = corOriginal;
@@ -253,12 +270,21 @@ public class Enemy : MonoBehaviour
             PoolProjetilInimigo.Instance == null)
             return;
 
+        if (faixaVidaAtual == 2)
+        {
+            if (contadorTiroCruz >= intervaloTirosCruz)
+            {
+                contadorTiroCruz = 0f;
+                AtirarCruzGiratoria();
+            }
+
+            return;
+        }
+
         float intervalo = tempoEntreTiros;
 
         if (faixaVidaAtual == 1)
             intervalo *= 0.8f;
-        else if (faixaVidaAtual == 2)
-            intervalo *= 0.65f;
 
         if (comportamentoAtual == 1)
             intervalo *= 0.9f;
@@ -274,34 +300,24 @@ public class Enemy : MonoBehaviour
         {
             AtirarCircular();
         }
-        else if (faixaVidaAtual == 0)
+        else if (comportamentoAtual == 0)
         {
-            if (comportamentoAtual == 0)
-                AtirarLeque();
-            else if (comportamentoAtual == 1)
-                AtirarDirecionado();
-            else
-                AtirarCircular();
+            AtirarLeque();
+        }
+        else if (comportamentoAtual == 1)
+        {
+            AtirarDirecionado();
         }
         else
         {
-            if (comportamentoAtual == 0)
-                AtirarLeque();
-            else if (comportamentoAtual == 1)
-                AtirarDirecionado();
-            else
-                AtirarCircular();
+            AtirarCircular();
         }
     }
 
     private void AtirarLeque()
     {
-        int quantidade = faixaVidaAtual == 2 ? 7 :
-                         faixaVidaAtual == 1 ? 5 : 3;
-
-        float abertura = faixaVidaAtual == 2 ? 55f :
-                         faixaVidaAtual == 1 ? 40f :
-                         aberturaLeque;
+        int quantidade = 3;
+        float abertura = aberturaLeque;
 
         float passo = abertura / (quantidade - 1);
         float anguloInicial = -abertura / 2f;
@@ -331,41 +347,31 @@ public class Enemy : MonoBehaviour
             ((Vector2)jogador.transform.position -
              (Vector2)pontoDeTiro.position).normalized;
 
-        float anguloBase =
-            Mathf.Atan2(direcao.y, direcao.x) * Mathf.Rad2Deg;
-
-        int quantidade = faixaVidaAtual == 2 ? 3 :
-                         faixaVidaAtual == 1 ? 2 : 1;
-
-        float abertura = faixaVidaAtual == 2 ? 30f :
-                         faixaVidaAtual == 1 ? 18f : 0f;
-
-        float passo = quantidade > 1
-            ? abertura / (quantidade - 1)
-            : 0f;
-
-        for (int i = 0; i < quantidade; i++)
-        {
-            float angulo =
-                anguloBase - abertura / 2f + passo * i;
-
-            Vector2 direcaoTiro = new Vector2(
-                Mathf.Cos(angulo * Mathf.Deg2Rad),
-                Mathf.Sin(angulo * Mathf.Deg2Rad)
-            );
-
-            CriarProjetil(direcaoTiro);
-        }
+        CriarProjetil(direcao);
     }
 
     private void AtirarCircular()
     {
-        int quantidade = faixaVidaAtual == 1 ? 8 :
-                         faixaVidaAtual == 2 ? 12 : 8;
+        int quantidade = faixaVidaAtual == 1 ? 8 : tirosCirculares;
 
         for (int i = 0; i < quantidade; i++)
         {
             float angulo = i * (360f / quantidade);
+
+            Vector2 direcao = new Vector2(
+                Mathf.Cos(angulo * Mathf.Deg2Rad),
+                Mathf.Sin(angulo * Mathf.Deg2Rad)
+            );
+
+            CriarProjetil(direcao);
+        }
+    }
+
+    private void AtirarCruzGiratoria()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            float angulo = anguloCruz + i * 90f;
 
             Vector2 direcao = new Vector2(
                 Mathf.Cos(angulo * Mathf.Deg2Rad),

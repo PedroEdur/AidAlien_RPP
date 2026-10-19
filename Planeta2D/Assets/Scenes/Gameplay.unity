@@ -1150,7 +1150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a5db59883c1e6047847f5d4735e87ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vida: 30
+  vida: 100
   projetilInimigoPrefab: {fileID: 760257327799887369, guid: c6df3774baaad284489a858af1450a02, type: 3}
   pontoDeTiro: {fileID: 618927049}
   tempoEntreTiros: 2.7
@@ -1164,6 +1164,9 @@ MonoBehaviour:
   aberturaLeque: 50
   tirosCirculares: 12
   intervaloComportamento: 5
+  intervaloTirosCruz: 0.3
+  velocidadeRotacaoCruz: 45
+  distanciaEntreTirosCruz: 2.5
 --- !u!212 &1005910397
 SpriteRenderer:
   serializedVersion: 3
@@ -1904,7 +1907,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PoolProjetilJogador
   projetilPrefab: {fileID: 6611217484145588683, guid: 7826c65c55832f64bbadec6d24f51ac4, type: 3}
-  capacidadeInicial: 10
+  capacidadeInicial: 5
   tamanhoMaximo: 30
 --- !u!4 &1434401991
 Transform:
