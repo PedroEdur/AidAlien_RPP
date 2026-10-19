@@ -1,42 +1,56 @@
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ProjetilInimigo : MonoBehaviour
 {
     public float velocidade = 5f;
     public float tempoDeVida = 5f;
 
-    void Start()
+    private PoolProjetilInimigo pool;
+    private float tempoDecorrido;
+
+    public void DefinirPool(PoolProjetilInimigo poolProjetil)
     {
-        Destroy(gameObject, tempoDeVida);
+        pool = poolProjetil;
     }
 
-    void Update()
+    private void OnEnable()
     {
-        // movimento pra baixo
-        transform.Translate(Vector2.down * velocidade * Time.deltaTime);
+        tempoDecorrido = 0f;
     }
 
-    void OnTriggerEnter2D(Collider2D outro)
+    private void Update()
+    {
+        transform.position += Vector3.down * velocidade * Time.deltaTime;
+
+        tempoDecorrido += Time.deltaTime;
+
+        if (tempoDecorrido >= tempoDeVida)
+            DevolverAoPool();
+    }
+
+    private void OnTriggerEnter2D(Collider2D outro)
     {
         if (outro.CompareTag("Escudo"))
         {
-            // se tocar no escudo, o tiro � repelido (pode ser destru�do)
-            Destroy(gameObject);
+            DevolverAoPool();
+            return;
         }
-        
+
         if (outro.CompareTag("Player"))
         {
-            // se acertar o jogador
-            GameManager.instance.PerderVida();
-            Destroy(gameObject);
+            if (GameManager.instance != null)
+                GameManager.instance.PerderVida();
+
+            DevolverAoPool();
         }
-        
-        if (outro.CompareTag("Planeta"))
-        {
-            // se atingir o planeta, reinicia a fase do boss
-            GameManager.instance.ReiniciarBoss();
-            Destroy(gameObject);
-        }
+    }
+
+    private void DevolverAoPool()
+    {
+        if (pool != null)
+            pool.DevolverProjetil(gameObject);
+        else
+            gameObject.SetActive(false);
     }
 }
