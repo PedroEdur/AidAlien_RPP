@@ -1159,9 +1159,11 @@ MonoBehaviour:
   velocidade: 2
   limiteEsquerdo: -5
   limiteDireito: 5
-  distanciaDeMovimento: 2
   duracaoInvulnerabilidade: 2
   spriteChefe: {fileID: 1005910397}
+  aberturaLeque: 50
+  tirosCirculares: 12
+  intervaloComportamento: 5
 --- !u!212 &1005910397
 SpriteRenderer:
   serializedVersion: 3
@@ -1231,7 +1233,7 @@ Transform:
   m_GameObject: {fileID: 1005910395}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.04, y: 4.16, z: 0}
+  m_LocalPosition: {x: 0.04, y: 1.65, z: 0}
   m_LocalScale: {x: 2.6251388, y: 2.233449, z: 1.5955007}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2095,8 +2097,8 @@ Transform:
   m_GameObject: {fileID: 1452352024}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.04, y: -3.21, z: 0}
-  m_LocalScale: {x: 1.1503183, y: 1.1503183, z: 1.1503183}
+  m_LocalPosition: {x: -0.2082, y: -3.0642, z: 0}
+  m_LocalScale: {x: 0.79141897, y: 0.76151067, z: 1.1503183}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 226803783}

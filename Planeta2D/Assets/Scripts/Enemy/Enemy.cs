@@ -11,21 +11,25 @@ public class Enemy : MonoBehaviour
     [Header("Tiros")]
     public GameObject projetilInimigoPrefab;
     public Transform pontoDeTiro;
-    public float tempoEntreTiros = 2f;
+    public float tempoEntreTiros = 2.5f;
 
     [Header("Configuração de fase")]
-    public bool ehBoss = false;
+    public bool ehBoss = true;
     public string proximaFase = "Cutscene final";
 
     [Header("Movimento")]
-    public float velocidade = 2f;
+    public float velocidade = 1.5f;
     public float limiteEsquerdo = -5f;
     public float limiteDireito = 5f;
-    public float distanciaDeMovimento = 2f;
 
     [Header("Transição de faixa")]
     public float duracaoInvulnerabilidade = 2f;
     public SpriteRenderer spriteChefe;
+
+    [Header("Bullet Hell")]
+    public float aberturaLeque = 35f;
+    public int tirosCirculares = 8;
+    public float intervaloComportamento = 6f;
 
     private Animator animator;
     private float contadorTiro;
@@ -75,7 +79,12 @@ public class Enemy : MonoBehaviour
             if (spriteChefe != null)
             {
                 Color cor = corOriginal;
-                cor.a = Mathf.Lerp(0.25f, 1f, Mathf.PingPong(Time.time * 8f, 1f));
+                cor.a = Mathf.Lerp(
+                    0.3f,
+                    1f,
+                    Mathf.PingPong(Time.time * 6f, 1f)
+                );
+
                 spriteChefe.color = cor;
             }
 
@@ -96,12 +105,21 @@ public class Enemy : MonoBehaviour
         ExecutarMovimento();
         ExecutarTiros();
 
-        if (contadorComportamento >= 5f)
+        if (contadorComportamento >= intervaloComportamento)
         {
             contadorComportamento = 0f;
 
             if (animator != null)
-                animator.SetInteger("Comportamento", (comportamentoAtual + 1) % 3);
+            {
+                animator.SetInteger(
+                    "Comportamento",
+                    (comportamentoAtual + 1) % 3
+                );
+            }
+            else
+            {
+                comportamentoAtual = (comportamentoAtual + 1) % 3;
+            }
         }
     }
 
@@ -110,7 +128,9 @@ public class Enemy : MonoBehaviour
         if (derrotado)
             return;
 
-        bool mudouFaixa = faixaVidaAtual != -1 && faixaVidaAtual != faixaVida;
+        bool mudouFaixa =
+            faixaVidaAtual != -1 &&
+            faixaVidaAtual != faixaVida;
 
         faixaVidaAtual = faixaVida;
         comportamentoAtual = comportamento;
@@ -135,7 +155,6 @@ public class Enemy : MonoBehaviour
             return;
 
         float porcentagem = (float)vida / vidaMaxima;
-
         int novaFaixa;
 
         if (porcentagem > 0.5f)
@@ -159,8 +178,8 @@ public class Enemy : MonoBehaviour
 
     private void ExecutarMovimento()
     {
-        float multiplicador = faixaVidaAtual == 2 ? 1.5f :
-                              faixaVidaAtual == 1 ? 1.2f : 1f;
+        float multiplicador = faixaVidaAtual == 2 ? 1.25f :
+                              faixaVidaAtual == 1 ? 1.1f : 1f;
 
         float esquerda = Mathf.Min(limiteEsquerdo, limiteDireito);
         float direita = Mathf.Max(limiteEsquerdo, limiteDireito);
@@ -180,7 +199,10 @@ public class Enemy : MonoBehaviour
         }
         else if (comportamentoAtual == 1)
         {
-            posicao.x += direcaoHorizontal * velocidade * multiplicador * Time.deltaTime;
+            posicao.x += direcaoHorizontal *
+                         velocidade *
+                         multiplicador *
+                         Time.deltaTime;
 
             if (posicao.x >= direita)
             {
@@ -196,7 +218,11 @@ public class Enemy : MonoBehaviour
         else
         {
             posicao.x = Mathf.Clamp(
-                posicao.x + Mathf.Sin(Time.time * 2f) * velocidade * multiplicador * Time.deltaTime,
+                posicao.x +
+                Mathf.Sin(Time.time * 1.5f) *
+                velocidade *
+                multiplicador *
+                Time.deltaTime,
                 esquerda,
                 direita
             );
@@ -214,41 +240,158 @@ public class Enemy : MonoBehaviour
         float direita = Mathf.Max(limiteEsquerdo, limiteDireito);
 
         destinoX = Random.Range(esquerda, direita);
-        direcaoHorizontal = transform.position.x < (esquerda + direita) / 2f ? 1f : -1f;
+
+        direcaoHorizontal =
+            transform.position.x < (esquerda + direita) / 2f
+            ? 1f
+            : -1f;
     }
 
     private void ExecutarTiros()
     {
-        if (pontoDeTiro == null)
+        if (pontoDeTiro == null ||
+            PoolProjetilInimigo.Instance == null)
             return;
-
-        if (PoolProjetilInimigo.Instance == null)
-        {
-            Debug.LogWarning("O chefe não encontrou o PoolProjetilInimigo na cena.", this);
-            return;
-        }
 
         float intervalo = tempoEntreTiros;
 
         if (faixaVidaAtual == 1)
-            intervalo *= 0.75f;
+            intervalo *= 0.8f;
         else if (faixaVidaAtual == 2)
-            intervalo *= 0.5f;
+            intervalo *= 0.65f;
 
         if (comportamentoAtual == 1)
-            intervalo *= 0.7f;
+            intervalo *= 0.9f;
         else if (comportamentoAtual == 2)
-            intervalo *= 1.3f;
+            intervalo *= 1.15f;
 
-        if (contadorTiro >= intervalo)
+        if (contadorTiro < intervalo)
+            return;
+
+        contadorTiro = 0f;
+
+        if (faixaVidaAtual == 1)
         {
+            AtirarCircular();
+        }
+        else if (faixaVidaAtual == 0)
+        {
+            if (comportamentoAtual == 0)
+                AtirarLeque();
+            else if (comportamentoAtual == 1)
+                AtirarDirecionado();
+            else
+                AtirarCircular();
+        }
+        else
+        {
+            if (comportamentoAtual == 0)
+                AtirarLeque();
+            else if (comportamentoAtual == 1)
+                AtirarDirecionado();
+            else
+                AtirarCircular();
+        }
+    }
+
+    private void AtirarLeque()
+    {
+        int quantidade = faixaVidaAtual == 2 ? 7 :
+                         faixaVidaAtual == 1 ? 5 : 3;
+
+        float abertura = faixaVidaAtual == 2 ? 55f :
+                         faixaVidaAtual == 1 ? 40f :
+                         aberturaLeque;
+
+        float passo = abertura / (quantidade - 1);
+        float anguloInicial = -abertura / 2f;
+
+        for (int i = 0; i < quantidade; i++)
+        {
+            float angulo = anguloInicial + passo * i;
+
+            Vector2 direcao =
+                Quaternion.Euler(0f, 0f, angulo) * Vector2.down;
+
+            CriarProjetil(direcao);
+        }
+    }
+
+    private void AtirarDirecionado()
+    {
+        GameObject jogador = GameObject.FindGameObjectWithTag("Player");
+
+        if (jogador == null)
+        {
+            AtirarLeque();
+            return;
+        }
+
+        Vector2 direcao =
+            ((Vector2)jogador.transform.position -
+             (Vector2)pontoDeTiro.position).normalized;
+
+        float anguloBase =
+            Mathf.Atan2(direcao.y, direcao.x) * Mathf.Rad2Deg;
+
+        int quantidade = faixaVidaAtual == 2 ? 3 :
+                         faixaVidaAtual == 1 ? 2 : 1;
+
+        float abertura = faixaVidaAtual == 2 ? 30f :
+                         faixaVidaAtual == 1 ? 18f : 0f;
+
+        float passo = quantidade > 1
+            ? abertura / (quantidade - 1)
+            : 0f;
+
+        for (int i = 0; i < quantidade; i++)
+        {
+            float angulo =
+                anguloBase - abertura / 2f + passo * i;
+
+            Vector2 direcaoTiro = new Vector2(
+                Mathf.Cos(angulo * Mathf.Deg2Rad),
+                Mathf.Sin(angulo * Mathf.Deg2Rad)
+            );
+
+            CriarProjetil(direcaoTiro);
+        }
+    }
+
+    private void AtirarCircular()
+    {
+        int quantidade = faixaVidaAtual == 1 ? 8 :
+                         faixaVidaAtual == 2 ? 12 : 8;
+
+        for (int i = 0; i < quantidade; i++)
+        {
+            float angulo = i * (360f / quantidade);
+
+            Vector2 direcao = new Vector2(
+                Mathf.Cos(angulo * Mathf.Deg2Rad),
+                Mathf.Sin(angulo * Mathf.Deg2Rad)
+            );
+
+            CriarProjetil(direcao);
+        }
+    }
+
+    private void CriarProjetil(Vector2 direcao)
+    {
+        GameObject projetil =
             PoolProjetilInimigo.Instance.ObterProjetil(
                 pontoDeTiro.position,
                 Quaternion.identity
             );
 
-            contadorTiro = 0f;
-        }
+        if (projetil == null)
+            return;
+
+        ProjetilInimigo script =
+            projetil.GetComponent<ProjetilInimigo>();
+
+        if (script != null)
+            script.DefinirDirecao(direcao);
     }
 
     private void OnTriggerEnter2D(Collider2D outro)
@@ -260,7 +403,8 @@ public class Enemy : MonoBehaviour
         {
             vida--;
 
-            Projetil projetilJogador = outro.GetComponent<Projetil>();
+            Projetil projetilJogador =
+                outro.GetComponent<Projetil>();
 
             if (projetilJogador != null)
                 projetilJogador.DevolverAoPool();
