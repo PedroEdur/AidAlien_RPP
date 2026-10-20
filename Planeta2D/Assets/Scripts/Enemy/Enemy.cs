@@ -34,9 +34,10 @@ public class Enemy : MonoBehaviour
     [Header("Terceiro estágio - Cruz giratória")]
     public float intervaloTirosCruz = 0.3f;
     public float velocidadeRotacaoCruz = 45f;
-    public float distanciaEntreTirosCruz = 0.8f;
 
     private Animator animator;
+    private InimigoVoador inimigoVoador;
+
     private float contadorTiro;
     private float contadorComportamento;
     private float contadorInvulnerabilidade;
@@ -45,16 +46,22 @@ public class Enemy : MonoBehaviour
     private float destinoX;
     private float direcaoHorizontal = 1f;
     private float alturaInicial;
+
     private Color corOriginal = Color.white;
+
     private bool invulneravel;
     private bool derrotado;
+
     private int faixaVidaAtual = -1;
     private int comportamentoAtual;
 
     private void Awake()
     {
         vidaMaxima = vida;
+
         animator = GetComponent<Animator>();
+        inimigoVoador = GetComponent<InimigoVoador>();
+
         alturaInicial = transform.position.y;
 
         if (spriteChefe == null)
@@ -101,6 +108,12 @@ public class Enemy : MonoBehaviour
 
                 if (spriteChefe != null)
                     spriteChefe.color = corOriginal;
+
+                contadorComportamento = 0f;
+                contadorTiro = 0f;
+                contadorTiroCruz = 0f;
+
+                EscolherDestino();
             }
 
             return;
@@ -118,25 +131,34 @@ public class Enemy : MonoBehaviour
             contadorTiro += Time.deltaTime;
         }
 
-        ExecutarMovimento();
+        if (inimigoVoador == null)
+            ExecutarMovimento();
+
         ExecutarTiros();
 
         if (contadorComportamento >= intervaloComportamento)
         {
             contadorComportamento = 0f;
 
+            int proximoComportamento = (comportamentoAtual + 1) % 3;
+
             if (animator != null)
             {
                 animator.SetInteger(
                     "Comportamento",
-                    (comportamentoAtual + 1) % 3
+                    proximoComportamento
                 );
             }
             else
             {
-                comportamentoAtual = (comportamentoAtual + 1) % 3;
+                comportamentoAtual = proximoComportamento;
             }
         }
+    }
+
+    public bool EstaInvulneravel()
+    {
+        return invulneravel || derrotado;
     }
 
     public void DefinirComportamento(int faixaVida, int comportamento)
@@ -156,6 +178,7 @@ public class Enemy : MonoBehaviour
         {
             invulneravel = true;
             contadorInvulnerabilidade = duracaoInvulnerabilidade;
+
             contadorTiro = 0f;
             contadorTiroCruz = 0f;
 
@@ -163,7 +186,8 @@ public class Enemy : MonoBehaviour
                 spriteChefe.color = corOriginal;
         }
 
-        EscolherDestino();
+        if (!invulneravel)
+            EscolherDestino();
     }
 
     private void AtualizarFaixaVida(bool inicial)
@@ -172,6 +196,7 @@ public class Enemy : MonoBehaviour
             return;
 
         float porcentagem = (float)vida / vidaMaxima;
+
         int novaFaixa;
 
         if (porcentagem > 0.5f)
@@ -184,6 +209,7 @@ public class Enemy : MonoBehaviour
         if (inicial)
         {
             faixaVidaAtual = -1;
+
             animator.SetInteger("FaixaVida", novaFaixa);
             animator.SetInteger("Comportamento", 0);
         }
@@ -195,8 +221,9 @@ public class Enemy : MonoBehaviour
 
     private void ExecutarMovimento()
     {
-        float multiplicador = faixaVidaAtual == 2 ? 1.25f :
-                              faixaVidaAtual == 1 ? 1.1f : 1f;
+        float multiplicador =
+            faixaVidaAtual == 2 ? 1.25f :
+            faixaVidaAtual == 1 ? 1.1f : 1f;
 
         float esquerda = Mathf.Min(limiteEsquerdo, limiteDireito);
         float direita = Mathf.Max(limiteEsquerdo, limiteDireito);
@@ -317,10 +344,8 @@ public class Enemy : MonoBehaviour
     private void AtirarLeque()
     {
         int quantidade = 3;
-        float abertura = aberturaLeque;
-
-        float passo = abertura / (quantidade - 1);
-        float anguloInicial = -abertura / 2f;
+        float passo = aberturaLeque / (quantidade - 1);
+        float anguloInicial = -aberturaLeque / 2f;
 
         for (int i = 0; i < quantidade; i++)
         {

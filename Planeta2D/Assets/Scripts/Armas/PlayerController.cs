@@ -12,10 +12,13 @@ public class PlayerController : MonoBehaviour
     public Transform pontoDeTiro;
     public GameObject escudo;
     public GameObject armaVisual;
-    public float intervaloEntreTiros = 0.3f;
+
+    [Header("Disparos")]
+    [Range(0.2f, 1f)]
+    public float intervaloEntreTiros = 0.4f;
 
     private bool usandoPlasma = true;
-    private float contadorTiro;
+    private float proximoTiro;
 
     private void Start()
     {
@@ -38,10 +41,13 @@ public class PlayerController : MonoBehaviour
         else if (Input.GetKey(KeyCode.DownArrow))
             movimentoVertical = -1f;
 
-        rb.linearVelocity = new Vector2(
-            movimentoHorizontal * velocidade,
-            movimentoVertical * velocidade
-        );
+        if (rb != null)
+        {
+            rb.linearVelocity = new Vector2(
+                movimentoHorizontal * velocidade,
+                movimentoVertical * velocidade
+            );
+        }
 
         if (Input.GetKeyDown(KeyCode.Z))
         {
@@ -51,17 +57,15 @@ public class PlayerController : MonoBehaviour
 
         if (usandoPlasma && Input.GetKey(KeyCode.X))
         {
-            contadorTiro -= Time.deltaTime;
-
-            if (contadorTiro <= 0f)
+            if (Time.time >= proximoTiro)
             {
                 Atirar();
-                contadorTiro = intervaloEntreTiros;
+                proximoTiro = Time.time + Mathf.Clamp(
+                    intervaloEntreTiros,
+                    0.2f,
+                    1f
+                );
             }
-        }
-        else
-        {
-            contadorTiro = 0f;
         }
     }
 
@@ -76,7 +80,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("PoolProjetilJogador não foi configurado na cena.");
+            Debug.LogWarning(
+                "PoolProjetilJogador não foi configurado na cena."
+            );
         }
     }
 
