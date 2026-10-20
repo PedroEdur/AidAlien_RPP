@@ -1150,7 +1150,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a5db59883c1e6047847f5d4735e87ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vida: 85
+  vida: 165
   projetilInimigoPrefab: {fileID: 760257327799887369, guid: c6df3774baaad284489a858af1450a02, type: 3}
   pontoDeTiro: {fileID: 618927049}
   tempoEntreTiros: 2.7

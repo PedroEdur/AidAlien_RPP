@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class Enemy : MonoBehaviour
 {
     [Header("Vida do chefe")]
-    public int vida = 67;
+    public int vida = 200;
     private int vidaMaxima;
 
     [Header("Tiros")]
