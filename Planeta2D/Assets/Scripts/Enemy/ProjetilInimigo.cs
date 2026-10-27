@@ -1,42 +1,74 @@
+
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class ProjetilInimigo : MonoBehaviour
 {
-    public float velocidade = 5f;
-    public float tempoDeVida = 5f;
+    public float velocidade = 2.5f;
+    public float tempoDeVida = 7f;
 
-    void Start()
+    private PoolProjetilInimigo pool;
+    private Vector2 direcao = Vector2.down;
+    private float tempoDecorrido;
+
+    public void DefinirPool(PoolProjetilInimigo poolProjetil)
     {
-        Destroy(gameObject, tempoDeVida);
+        pool = poolProjetil;
     }
 
-    void Update()
+    public void DefinirDirecao(Vector2 novaDirecao)
     {
-        // movimento pra baixo
-        transform.Translate(Vector2.down * velocidade * Time.deltaTime);
+        direcao = novaDirecao.sqrMagnitude > 0.001f
+            ? novaDirecao.normalized
+            : Vector2.down;
     }
 
-    void OnTriggerEnter2D(Collider2D outro)
+    private void OnEnable()
+    {
+        tempoDecorrido = 0f;
+        direcao = Vector2.down;
+    }
+
+    private void Update()
+    {
+        transform.position +=
+            (Vector3)(direcao * velocidade * Time.deltaTime);
+
+        tempoDecorrido += Time.deltaTime;
+
+        if (tempoDecorrido >= tempoDeVida)
+        {
+            DevolverAoPool();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D outro)
     {
         if (outro.CompareTag("Escudo"))
         {
-            // se tocar no escudo, o tiro � repelido (pode ser destru�do)
-            Destroy(gameObject);
+            DevolverAoPool();
+            return;
         }
-        
+
         if (outro.CompareTag("Player"))
         {
-            // se acertar o jogador
-            GameManager.instance.PerderVida();
-            Destroy(gameObject);
+            if (GameManager.instance != null)
+            {
+                GameManager.instance.PerderVida();
+            }
+
+            DevolverAoPool();
         }
-        
-        if (outro.CompareTag("Planeta"))
+    }
+
+    private void DevolverAoPool()
+    {
+        if (pool != null)
         {
-            // se atingir o planeta, reinicia a fase do boss
-            GameManager.instance.ReiniciarBoss();
-            Destroy(gameObject);
+            pool.DevolverProjetil(gameObject);
+        }
+        else
+        {
+            gameObject.SetActive(false);
         }
     }
 }

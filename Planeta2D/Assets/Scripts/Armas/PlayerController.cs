@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿
+using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
@@ -7,58 +8,90 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
 
     [Header("Armas")]
-    public GameObject projetilPrefab;   // prefab do tiro de plasma
-    public Transform pontoDeTiro;       // posição de onde o tiro sai
-    public GameObject escudo;           // objeto do escudo
-    public GameObject armaVisual;       // sprite/objeto da arma visível
+    public GameObject projetilPrefab;
+    public Transform pontoDeTiro;
+    public GameObject escudo;
+    public GameObject armaVisual;
 
-    private bool usandoPlasma = true;   // começa com arma ativa
+    [Header("Disparos")]
+    [Range(0.2f, 1f)]
+    public float intervaloEntreTiros = 0.4f;
 
-    void Start()
+    private bool usandoPlasma = true;
+    private float proximoTiro;
+
+    private void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        AlternarArma(true); // começa com a arma ativa
+        AlternarArma(true);
     }
 
-    void Update()
+    private void Update()
     {
-        // Movimento pelas setas esquerda e direita
-        float movimento = 0f;
+        float movimentoHorizontal = 0f;
+        float movimentoVertical = 0f;
+
         if (Input.GetKey(KeyCode.RightArrow))
-            movimento = 1f;
+            movimentoHorizontal = 1f;
         else if (Input.GetKey(KeyCode.LeftArrow))
-            movimento = -1f;
+            movimentoHorizontal = -1f;
 
-        rb.linearVelocity = new Vector2(movimento * velocidade, rb.linearVelocity.y);
+        if (Input.GetKey(KeyCode.UpArrow))
+            movimentoVertical = 1f;
+        else if (Input.GetKey(KeyCode.DownArrow))
+            movimentoVertical = -1f;
 
-        // Trocar entre arma e escudo (Z)
+        if (rb != null)
+        {
+            rb.linearVelocity = new Vector2(
+                movimentoHorizontal * velocidade,
+                movimentoVertical * velocidade
+            );
+        }
+
         if (Input.GetKeyDown(KeyCode.Z))
         {
             usandoPlasma = !usandoPlasma;
             AlternarArma(usandoPlasma);
         }
 
-        // Disparar com X (só se estiver usando plasma)
-        if (usandoPlasma && Input.GetKeyDown(KeyCode.X))
+        if (usandoPlasma && Input.GetKey(KeyCode.X))
         {
-            Atirar();
+            if (Time.time >= proximoTiro)
+            {
+                Atirar();
+                proximoTiro = Time.time + Mathf.Clamp(
+                    intervaloEntreTiros,
+                    0.2f,
+                    1f
+                );
+            }
         }
     }
 
-    void Atirar()
+    private void Atirar()
     {
-        // Cria o projétil no ponto de tiro, virado pra cima
-        Instantiate(projetilPrefab, pontoDeTiro.position, Quaternion.identity);
+        if (PoolProjetilJogador.Instance != null)
+        {
+            PoolProjetilJogador.Instance.ObterProjetil(
+                pontoDeTiro.position,
+                Quaternion.identity
+            );
+        }
+        else
+        {
+            Debug.LogWarning(
+                "PoolProjetilJogador não foi configurado na cena."
+            );
+        }
     }
 
-    void AlternarArma(bool plasmaAtivo)
+    private void AlternarArma(bool plasmaAtivo)
     {
-        // Ativa o escudo quando plasma estiver desligado
-        escudo.SetActive(!plasmaAtivo);
+        if (escudo != null)
+            escudo.SetActive(!plasmaAtivo);
 
-        // Mostra a arma visual quando o plasma estiver ativo
         if (armaVisual != null)
             armaVisual.SetActive(plasmaAtivo);
     }
 }
-
