@@ -136,11 +136,13 @@ public class Enemy : MonoBehaviour
 
         ExecutarTiros();
 
-        if (contadorComportamento >= intervaloComportamento)
+        if (contadorComportamento >= Mathf.Max(0.1f, intervaloComportamento))
         {
             contadorComportamento = 0f;
 
             int proximoComportamento = (comportamentoAtual + 1) % 3;
+
+            comportamentoAtual = proximoComportamento;
 
             if (animator != null)
             {
@@ -148,10 +150,6 @@ public class Enemy : MonoBehaviour
                     "Comportamento",
                     proximoComportamento
                 );
-            }
-            else
-            {
-                comportamentoAtual = proximoComportamento;
             }
         }
     }
@@ -166,21 +164,17 @@ public class Enemy : MonoBehaviour
         if (derrotado)
             return;
 
-        faixaVida = Mathf.Clamp(faixaVida, 0, 2);
-        comportamento = Mathf.Clamp(comportamento, 0, 2);
-
         bool mudouFaixa =
             faixaVidaAtual != -1 &&
             faixaVidaAtual != faixaVida;
 
         faixaVidaAtual = faixaVida;
         comportamentoAtual = comportamento;
-        contadorComportamento = 0f;
 
         if (animator != null)
         {
-            animator.SetInteger("FaixaVida", faixaVidaAtual);
-            animator.SetInteger("Comportamento", comportamentoAtual);
+            animator.SetInteger("FaixaVida", faixaVida);
+            animator.SetInteger("Comportamento", comportamento);
         }
 
         if (mudouFaixa)
@@ -195,13 +189,15 @@ public class Enemy : MonoBehaviour
                 spriteChefe.color = corOriginal;
         }
 
+        contadorComportamento = 0f;
+
         if (!invulneravel)
             EscolherDestino();
     }
 
     private void AtualizarFaixaVida(bool inicial)
     {
-        if (vidaMaxima <= 0)
+        if (vidaMaxima <= 0 || animator == null)
             return;
 
         float porcentagem = (float)vida / vidaMaxima;
@@ -219,44 +215,23 @@ public class Enemy : MonoBehaviour
         {
             faixaVidaAtual = -1;
             comportamentoAtual = 0;
+            contadorComportamento = 0f;
 
-            if (animator != null)
-            {
-                animator.SetInteger("FaixaVida", novaFaixa);
-                animator.SetInteger("Comportamento", 0);
-            }
-
+            animator.SetInteger("FaixaVida", novaFaixa);
+            animator.SetInteger("Comportamento", 0);
             return;
         }
 
-        if (novaFaixa == faixaVidaAtual)
-            return;
+        int faixaAnimator = animator.GetInteger("FaixaVida");
 
-        int faixaAnterior = faixaVidaAtual;
-
-        faixaVidaAtual = novaFaixa;
-        contadorComportamento = 0f;
-        contadorTiro = 0f;
-        contadorTiroCruz = 0f;
-
-        if (animator != null)
+        if (novaFaixa != faixaAnimator)
         {
             animator.SetInteger("FaixaVida", novaFaixa);
             animator.SetInteger("Comportamento", 0);
+
+            comportamentoAtual = 0;
+            contadorComportamento = 0f;
         }
-
-        comportamentoAtual = 0;
-
-        if (faixaAnterior != -1)
-        {
-            invulneravel = true;
-            contadorInvulnerabilidade = duracaoInvulnerabilidade;
-
-            if (spriteChefe != null)
-                spriteChefe.color = corOriginal;
-        }
-
-        EscolherDestino();
     }
 
     private void ExecutarMovimento()
