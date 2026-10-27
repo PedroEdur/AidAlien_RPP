@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
     [Header("Ataques normais")]
     public float aberturaLeque = 35f;
     public int tirosCirculares = 8;
-    public float intervaloComportamento = 5f;
+    public float intervaloComportamento = 6f;
 
     [Header("Terceiro estágio - Cruz giratória")]
     public float intervaloTirosCruz = 0.3f;
@@ -93,7 +93,6 @@ public class Enemy : MonoBehaviour
             if (spriteChefe != null)
             {
                 Color cor = corOriginal;
-
                 cor.a = Mathf.Lerp(
                     0.3f,
                     1f,
@@ -137,22 +136,23 @@ public class Enemy : MonoBehaviour
 
         ExecutarTiros();
 
-        if (intervaloComportamento > 0f &&
-            contadorComportamento >= intervaloComportamento)
+        if (contadorComportamento >= intervaloComportamento)
         {
             contadorComportamento = 0f;
 
-            comportamentoAtual = (comportamentoAtual + 1) % 3;
+            int proximoComportamento = (comportamentoAtual + 1) % 3;
 
             if (animator != null)
             {
                 animator.SetInteger(
                     "Comportamento",
-                    comportamentoAtual
+                    proximoComportamento
                 );
             }
-
-            EscolherDestino();
+            else
+            {
+                comportamentoAtual = proximoComportamento;
+            }
         }
     }
 
@@ -166,18 +166,22 @@ public class Enemy : MonoBehaviour
         if (derrotado)
             return;
 
+        faixaVida = Mathf.Clamp(faixaVida, 0, 2);
+        comportamento = Mathf.Clamp(comportamento, 0, 2);
+
         bool mudouFaixa =
             faixaVidaAtual != -1 &&
             faixaVidaAtual != faixaVida;
 
         faixaVidaAtual = faixaVida;
-
-        // Atualiza o comportamento interno ao entrar no estado.
-        // Não redefine o parâmetro do Animator nem reinicia o contador.
         comportamentoAtual = comportamento;
+        contadorComportamento = 0f;
 
         if (animator != null)
+        {
             animator.SetInteger("FaixaVida", faixaVidaAtual);
+            animator.SetInteger("Comportamento", comportamentoAtual);
+        }
 
         if (mudouFaixa)
         {
@@ -197,7 +201,7 @@ public class Enemy : MonoBehaviour
 
     private void AtualizarFaixaVida(bool inicial)
     {
-        if (vidaMaxima <= 0 || animator == null)
+        if (vidaMaxima <= 0)
             return;
 
         float porcentagem = (float)vida / vidaMaxima;
@@ -215,15 +219,44 @@ public class Enemy : MonoBehaviour
         {
             faixaVidaAtual = -1;
             comportamentoAtual = 0;
-            contadorComportamento = 0f;
 
+            if (animator != null)
+            {
+                animator.SetInteger("FaixaVida", novaFaixa);
+                animator.SetInteger("Comportamento", 0);
+            }
+
+            return;
+        }
+
+        if (novaFaixa == faixaVidaAtual)
+            return;
+
+        int faixaAnterior = faixaVidaAtual;
+
+        faixaVidaAtual = novaFaixa;
+        contadorComportamento = 0f;
+        contadorTiro = 0f;
+        contadorTiroCruz = 0f;
+
+        if (animator != null)
+        {
             animator.SetInteger("FaixaVida", novaFaixa);
             animator.SetInteger("Comportamento", 0);
         }
-        else if (novaFaixa != faixaVidaAtual)
+
+        comportamentoAtual = 0;
+
+        if (faixaAnterior != -1)
         {
-            animator.SetInteger("FaixaVida", novaFaixa);
+            invulneravel = true;
+            contadorInvulnerabilidade = duracaoInvulnerabilidade;
+
+            if (spriteChefe != null)
+                spriteChefe.color = corOriginal;
         }
+
+        EscolherDestino();
     }
 
     private void ExecutarMovimento()
@@ -306,8 +339,7 @@ public class Enemy : MonoBehaviour
 
         if (faixaVidaAtual == 2)
         {
-            if (intervaloTirosCruz > 0f &&
-                contadorTiroCruz >= intervaloTirosCruz)
+            if (contadorTiroCruz >= intervaloTirosCruz)
             {
                 contadorTiroCruz = 0f;
                 AtirarCruzGiratoria();

@@ -16,9 +16,14 @@ public class BossStateBehaviour : StateMachineBehaviour
     {
         Enemy chefe = animator.GetComponent<Enemy>();
 
-        if (chefe != null)
-        {
-            chefe.DefinirComportamento(faixaVida, comportamento);
-        }
+        if (chefe == null)
+            return;
+
+        int faixaAtual = animator.GetInteger("FaixaVida");
+
+        if (faixaAtual != faixaVida)
+            return;
+
+        chefe.DefinirComportamento(faixaVida, comportamento);
     }
 }

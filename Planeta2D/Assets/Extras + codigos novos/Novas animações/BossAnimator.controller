@@ -683,6 +683,9 @@ AnimatorStateTransition:
   - m_ConditionMode: 6
     m_ConditionEvent: Comportamento
     m_EventTreshold: 0
+  - m_ConditionMode: 6
+    m_ConditionEvent: FaixaVida
+    m_EventTreshold: 0
   m_DstStateMachine: {fileID: 0}
   m_DstState: {fileID: -5288351578428559553}
   m_Solo: 0
