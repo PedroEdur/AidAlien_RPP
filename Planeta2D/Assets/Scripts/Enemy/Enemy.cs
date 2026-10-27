@@ -109,7 +109,6 @@ public class Enemy : MonoBehaviour
                 if (spriteChefe != null)
                     spriteChefe.color = corOriginal;
 
-                contadorComportamento = 0f;
                 contadorTiro = 0f;
                 contadorTiroCruz = 0f;
 
@@ -139,18 +138,10 @@ public class Enemy : MonoBehaviour
         if (contadorComportamento >= Mathf.Max(0.1f, intervaloComportamento))
         {
             contadorComportamento = 0f;
-
-            int proximoComportamento = (comportamentoAtual + 1) % 3;
-
-            comportamentoAtual = proximoComportamento;
+            comportamentoAtual = (comportamentoAtual + 1) % 3;
 
             if (animator != null)
-            {
-                animator.SetInteger(
-                    "Comportamento",
-                    proximoComportamento
-                );
-            }
+                animator.SetInteger("Comportamento", comportamentoAtual);
         }
     }
 
@@ -189,7 +180,8 @@ public class Enemy : MonoBehaviour
                 spriteChefe.color = corOriginal;
         }
 
-        contadorComportamento = 0f;
+        if (mudouFaixa)
+            contadorComportamento = 0f;
 
         if (!invulneravel)
             EscolherDestino();
@@ -213,7 +205,7 @@ public class Enemy : MonoBehaviour
 
         if (inicial)
         {
-            faixaVidaAtual = -1;
+            faixaVidaAtual = novaFaixa;
             comportamentoAtual = 0;
             contadorComportamento = 0f;
 
@@ -222,15 +214,10 @@ public class Enemy : MonoBehaviour
             return;
         }
 
-        int faixaAnimator = animator.GetInteger("FaixaVida");
-
-        if (novaFaixa != faixaAnimator)
+        if (novaFaixa != faixaVidaAtual)
         {
             animator.SetInteger("FaixaVida", novaFaixa);
-            animator.SetInteger("Comportamento", 0);
-
-            comportamentoAtual = 0;
-            contadorComportamento = 0f;
+            DefinirComportamento(novaFaixa, 0);
         }
     }
 
@@ -339,21 +326,13 @@ public class Enemy : MonoBehaviour
         contadorTiro = 0f;
 
         if (faixaVidaAtual == 1)
-        {
             AtirarCircular();
-        }
         else if (comportamentoAtual == 0)
-        {
             AtirarLeque();
-        }
         else if (comportamentoAtual == 1)
-        {
             AtirarDirecionado();
-        }
         else
-        {
             AtirarCircular();
-        }
     }
 
     private void AtirarLeque()
@@ -365,7 +344,6 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < quantidade; i++)
         {
             float angulo = anguloInicial + passo * i;
-
             Vector2 direcao =
                 Quaternion.Euler(0f, 0f, angulo) * Vector2.down;
 
