@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour
     [Header("Ataques normais")]
     public float aberturaLeque = 35f;
     public int tirosCirculares = 8;
-    public float intervaloComportamento = 6f;
+    public float intervaloComportamento = 5f;
 
     [Header("Terceiro estágio - Cruz giratória")]
     public float intervaloTirosCruz = 0.3f;
@@ -93,6 +93,7 @@ public class Enemy : MonoBehaviour
             if (spriteChefe != null)
             {
                 Color cor = corOriginal;
+
                 cor.a = Mathf.Lerp(
                     0.3f,
                     1f,
@@ -136,23 +137,22 @@ public class Enemy : MonoBehaviour
 
         ExecutarTiros();
 
-        if (contadorComportamento >= intervaloComportamento)
+        if (intervaloComportamento > 0f &&
+            contadorComportamento >= intervaloComportamento)
         {
             contadorComportamento = 0f;
 
-            int proximoComportamento = (comportamentoAtual + 1) % 3;
+            comportamentoAtual = (comportamentoAtual + 1) % 3;
 
             if (animator != null)
             {
                 animator.SetInteger(
                     "Comportamento",
-                    proximoComportamento
+                    comportamentoAtual
                 );
             }
-            else
-            {
-                comportamentoAtual = proximoComportamento;
-            }
+
+            EscolherDestino();
         }
     }
 
@@ -171,8 +171,13 @@ public class Enemy : MonoBehaviour
             faixaVidaAtual != faixaVida;
 
         faixaVidaAtual = faixaVida;
+
+        // Atualiza o comportamento interno ao entrar no estado.
+        // Não redefine o parâmetro do Animator nem reinicia o contador.
         comportamentoAtual = comportamento;
-        contadorComportamento = 0f;
+
+        if (animator != null)
+            animator.SetInteger("FaixaVida", faixaVidaAtual);
 
         if (mudouFaixa)
         {
@@ -209,6 +214,8 @@ public class Enemy : MonoBehaviour
         if (inicial)
         {
             faixaVidaAtual = -1;
+            comportamentoAtual = 0;
+            contadorComportamento = 0f;
 
             animator.SetInteger("FaixaVida", novaFaixa);
             animator.SetInteger("Comportamento", 0);
@@ -299,7 +306,8 @@ public class Enemy : MonoBehaviour
 
         if (faixaVidaAtual == 2)
         {
-            if (contadorTiroCruz >= intervaloTirosCruz)
+            if (intervaloTirosCruz > 0f &&
+                contadorTiroCruz >= intervaloTirosCruz)
             {
                 contadorTiroCruz = 0f;
                 AtirarCruzGiratoria();

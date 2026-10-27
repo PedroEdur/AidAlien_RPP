@@ -1127,10 +1127,10 @@ GameObject:
   - component: {fileID: 1005910398}
   - component: {fileID: 1005910397}
   - component: {fileID: 1005910396}
-  - component: {fileID: 1005910399}
-  - component: {fileID: 1005910400}
   - component: {fileID: 1005910401}
   - component: {fileID: 1005910402}
+  - component: {fileID: 1005910399}
+  - component: {fileID: 1005910400}
   m_Layer: 0
   m_Name: Enemy 1
   m_TagString: Enemy
