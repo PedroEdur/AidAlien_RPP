@@ -536,37 +536,17 @@ PrefabInstance:
       propertyPath: m_text
       value: "Parab\xE9ns! Voc\xEA conseguiu derrotar o boss!!! "
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5581136437276066481, guid: 7bad705d27574064d914162c8c70c1d5, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 886638645811546768, guid: 7bad705d27574064d914162c8c70c1d5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 929275767}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7bad705d27574064d914162c8c70c1d5, type: 3}
 --- !u!224 &929275765 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 1657736531681703464, guid: 7bad705d27574064d914162c8c70c1d5, type: 3}
   m_PrefabInstance: {fileID: 929275764}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &929275766 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 886638645811546768, guid: 7bad705d27574064d914162c8c70c1d5, type: 3}
-  m_PrefabInstance: {fileID: 929275764}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &929275767
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 929275766}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 697143a709ae54c47b74b8011b539f1e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  nomedacena: menu
 --- !u!1 &949937027
 GameObject:
   m_ObjectHideFlags: 0
